@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# Local Databases & Vector Stores
+*.db
+*.sqlite
+*.sqlite3
+data/*
+!data/.gitkeep
+
+# Secrets and Environment Files
+.env
+.env.local
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fipro-backend
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      - DATA_DIR=/app/data
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+
+    volumes:
+      - ./backend/app:/app/app
+      - ./data:/app/data
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fipro-frontend
+
+    ports:
+      - "8501:8501"
+
+    environment:
+      - API_BASE_URL=http://backend:8000/api
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    restart: unless-stopped
